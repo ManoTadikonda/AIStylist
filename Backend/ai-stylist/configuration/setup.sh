@@ -19,10 +19,10 @@ pip install --upgrade pip
 echo "Installing Flask and dependencies..."
 pip install flask flask-cors opencv-python numpy werkzeug
 
-# Install AI model dependencies 
+# Install AI model dependencies
 echo "Installing AI model dependencies..."
 pip install torch torchvision # PyTorch
-pip install tensorflow  # TensorFlow 
+pip install tensorflow  # TensorFlow
 pip install scikit-learn pandas  # Scikit-Learn & Pandas
 pip install timm
 
