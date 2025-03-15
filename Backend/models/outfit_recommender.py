@@ -216,8 +216,8 @@ Recommended outfit:"""
             error_msg = f"Exception during API call: {str(e)}"
             print(error_msg)
             return f"Error generating recommendation: {error_msg}"
-
-    def fetch_weather_data(self, location: str) -> Dict:
+    '''
+   ''''''' def fetch_weather_data(self, location: str) -> Dict:
         """
         Fetch current weather data for a given location using a free weather API.
 
@@ -327,7 +327,7 @@ Recommended outfit:"""
             # ),
             "weather_condition": condition,
         }
-
+    '''
     def recommend_outfit(
         self,
         wardrobe_items: List[Dict],
@@ -349,14 +349,16 @@ Recommended outfit:"""
         if not wardrobe_items:
             return {"error": "No wardrobe items provided", "success": False}
 
+
         # If no weather data provided, fetch it
+        '''
         if weather_data is None:
             if location:
                 weather_data = self.fetch_weather_data(location)
             else:
                 # Use a default location or mock data
                 weather_data = self._get_mock_weather_data("Default Location")
-
+        '''
         # Build prompt
         prompt = self._build_prompt(wardrobe_items, weather_data)
 

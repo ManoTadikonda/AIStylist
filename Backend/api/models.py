@@ -99,17 +99,6 @@ class OutfitRequest(BaseModel):
         None, description="Style preference for outfit recommendation"
     )
 
-    @validator("wardrobe_ids", "location", "weather_data")
-    def either_ids_or_weather_info_required(cls, v, values):
-        if (
-            not values.get("wardrobe_ids")
-            and not values.get("location")
-            and not values.get("weather_data")
-        ):
-            raise ValueError(
-                "Either wardrobe_ids, location, or weather_data must be provided"
-            )
-        return v
 
 
 class OutfitRecommendation(BaseModel):

@@ -152,13 +152,12 @@ This backend supports multiple options for LLM-based outfit recommendations:
 This backend is designed to integrate with the React+Vite frontend located in the `ai-stylist` directory. The frontend can make API calls to this backend for all functionality.
 
 
-## Legacy Backend (Flask)
 
-The old Flask-based backend is still available:
 
-```bash
-cd backend/ai-stylist
-sh configuration/setup.sh
-python analyze.py
-# Test with: curl -X POST -v -F "file=@image.png" http://127.0.0.1:5000/analyze
-```
+
+
+
+
+
+
+

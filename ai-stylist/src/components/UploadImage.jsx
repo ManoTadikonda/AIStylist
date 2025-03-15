@@ -6,14 +6,19 @@ const UploadImage = () => {
     const [imageFiles, setImageFiles] = useState([]); // Store actual files for upload
     const [message, setMessage] = useState("");
     const [analysisResults, setAnalysisResults] = useState({}); // Store parsed backend results
+    const [loading, setLoading] = useState(false); // Loading state
 
     // Handle multiple image selection
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);
+
+        // Free old image URLs to prevent memory leaks
+        images.forEach(url => URL.revokeObjectURL(url));
+
         const imageURLs = files.map(file => URL.createObjectURL(file));
 
-        setImages(prevImages => [...prevImages, ...imageURLs]); // Store previews
-        setImageFiles(prevFiles => [...prevFiles, ...files]); // Store files for backend
+        setImages(imageURLs); // Store previews
+        setImageFiles(files); // Store files for backend
     };
 
     // Upload and analyze each image
@@ -23,6 +28,7 @@ const UploadImage = () => {
             return;
         }
 
+        setLoading(true);
         setMessage("Uploading images...");
 
         const results = {};
@@ -30,35 +36,48 @@ const UploadImage = () => {
         for (const file of imageFiles) {
             const formData = new FormData();
             formData.append("file", file);
+            formData.append("add_to_wardrobe", "true");
 
             try {
-                const response = await fetch("http://127.0.0.1:5000/analyze", {
+                const response = await fetch("http://127.0.0.1:8000/analyze", {
                     method: "POST",
                     body: formData,
+                    headers: {
+                        "Accept": "application/json",
+                    },
                 });
+
+                if (!response.ok) {
+                    const errorResult = await response.json();
+                    setMessage(`Error analyzing ${file.name}: ${errorResult.detail || "Unknown error"}`);
+                    continue;
+                }
 
                 const result = await response.json();
 
-                if (response.ok) {
-                    // Parse the "results" field from the backend response
-                    const parsedResults = JSON.parse(result.results);
-
-                    results[file.name] = {
-                        clothing_type: parsedResults.clothing_type.type,
-                        confidence: parsedResults.clothing_type.confidence.toFixed(2),
-                        dominant_colors: parsedResults.dominant_colors.map(color => `${color.color} (${color.percentage}%)`).join(", "),
-                        seasonal_suitability: parsedResults.seasonal_suitability.map(season => `${season.season} (${season.probability}%)`).join(", ")
-                    };
-                } else {
-                    setMessage(`Error analyzing ${file.name}: ${result.error}`);
+                // Ensure result is valid and successful
+                if (!result.success) {
+                    setMessage(`Analysis failed for ${file.name}: ${result.error || "Unknown error"}`);
+                    continue;
                 }
+
+                // Store the extracted attributes
+                results[file.name] = {
+                    clothing_type: result.clothing_type || "Unknown",
+                    dominant_color: result.top_attributes?.color || "Unknown",
+                    pattern: result.top_attributes?.pattern || "Unknown",
+                    material: result.top_attributes?.material || "Unknown",
+                    style: result.top_attributes?.style || "Unknown",
+                    confidence: (result.clothing_type_scores?.[result.clothing_type] * 100).toFixed(2) || "N/A",
+                };
             } catch (error) {
-                setMessage(`Error uploading ${file.name}`);
+                setMessage(`Network error while uploading ${file.name}`);
             }
         }
 
         setAnalysisResults(results);
         setMessage("All images uploaded and analyzed successfully!");
+        setLoading(false);
     };
 
     return (
@@ -77,8 +96,10 @@ const UploadImage = () => {
                             {result && (
                                 <div className="analysis-results">
                                     <p><strong>Clothing Type:</strong> {result.clothing_type} (Confidence: {result.confidence}%)</p>
-                                    <p><strong>Dominant Colors:</strong> {result.dominant_colors}</p>
-                                    <p><strong>Seasonal Suitability:</strong> {result.seasonal_suitability}</p>
+                                    <p><strong>Dominant Color:</strong> {result.dominant_color}</p>
+                                    <p><strong>Pattern:</strong> {result.pattern}</p>
+                                    <p><strong>Material:</strong> {result.material}</p>
+                                    <p><strong>Style:</strong> {result.style}</p>
                                 </div>
                             )}
                         </div>
@@ -87,10 +108,12 @@ const UploadImage = () => {
             </div>
 
             {imageFiles.length > 0 && (
-                <button onClick={handleUpload}>Upload & Analyze</button>
+                <button onClick={handleUpload} disabled={loading}>
+                    {loading ? "Uploading..." : "Upload & Analyze"}
+                </button>
             )}
 
-            {message && <p>{message}</p>}
+            {message && <p className="status-message">{message}</p>}
         </div>
     );
 };
