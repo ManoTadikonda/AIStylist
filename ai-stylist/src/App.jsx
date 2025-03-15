@@ -29,6 +29,7 @@ const App = () => {
     // Handle fetched weather data
     const handleWeatherChange = (weatherResponse) => {
         const processedWeather = {
+            locationData: weatherResponse.name,
             temperature: weatherResponse.main.temp,
             temperature_feels_like: weatherResponse.main.feels_like,
             humidity: weatherResponse.main.humidity,
@@ -63,7 +64,7 @@ const App = () => {
     const getOutfitRecommendation = async () => {
         if (!weatherData || !style) {
             setError("Ensure your wardrobe is uploaded, style preference is set, and weather data is available.");
-            console.error("❌ Missing data:", { weatherData, style, images });
+            console.error(" Missing data:", { weatherData, style, images });
             return;
         }
 
@@ -72,7 +73,6 @@ const App = () => {
 
         const requestData = {
             wardrobe_ids: images.map(img => img.id || "default-wardrobe-id"), // Replace with actual wardrobe item IDs
-            location: "New York", // Modify if city selection is needed
             weather_data: weatherData,
             style_preference: style,
         };

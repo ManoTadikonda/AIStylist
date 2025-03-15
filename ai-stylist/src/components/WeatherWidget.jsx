@@ -8,7 +8,7 @@ const WeatherWidget = ({ onWeatherChange }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const apiKey = "";  // Replace with your OpenWeather API key
+    const apiKey = "5bce12251f60f98b1904689ac034802d";  // Replace with your OpenWeather API key
 
     const fetchWeather = async () => {
         if (city === '') {

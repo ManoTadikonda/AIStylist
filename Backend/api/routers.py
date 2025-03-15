@@ -199,7 +199,6 @@ async def recommend_outfit(
         # Generate recommendation
         result = recommender.recommend_outfit(
             wardrobe_items=items,
-            location=request.location,
             weather_data=request.weather_data.dict() if request.weather_data else None,
         )
 
@@ -218,7 +217,7 @@ async def recommend_outfit(
             status_code=500, detail=f"Error generating outfit recommendation: {str(e)}"
         )
 
-
+'''
 # Weather Endpoints
 @weather_router.post(
     "/current", response_model=models.WeatherData, summary="Get current weather data"
@@ -239,3 +238,4 @@ async def get_weather(
         raise HTTPException(
             status_code=500, detail=f"Error fetching weather data: {str(e)}"
         )
+ '''

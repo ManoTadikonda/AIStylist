@@ -23,7 +23,7 @@ class OutfitRecommender:
         # Set up the appropriate API based on type
         if api_type == "huggingface":
             # For Hugging Face Inference API (free tier)
-            self.api_key = os.getenv("HUGGINGFACE_API_KEY", "")
+            self.api_key = os.getenv("HUGGINGFACE_API_KEY", "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")
             self.api_url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
             self.headers = {
                 "Authorization": f"Bearer {self.api_key}",
