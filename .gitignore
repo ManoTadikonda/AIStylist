@@ -9,6 +9,7 @@ htmlcov/
 venv/
 .venv/
 env/
+.ipynb_checkpoints/
 
 # IDE
 .idea/
@@ -24,5 +25,6 @@ env/
 Thumbs.db
 
 # Data
-data/images/*
-!data/images/.gitkeep
+backend/data/images/*
+!backend/data/images/.gitkeep
+backend/data/wardrobe.*

@@ -148,9 +148,14 @@ Recommended outfit:"""
         }
 
         try:
-            response = requests.post(self.api_url, headers=self.headers, json=payload)
+            response = requests.post(
+                self.api_url, headers=self.headers, json=payload, timeout=60
+            )
             if response.status_code == 200:
-                return response.json()[0]["generated_text"].replace(prompt, "").strip()
+                response_json = response.json()
+                generated_text = response_json[0]["generated_text"]
+                final_response = generated_text.replace(prompt, "").strip()
+                return final_response
             else:
                 error_msg = f"API call failed with status code {response.status_code}: {response.text}"
                 print(error_msg)
@@ -242,7 +247,7 @@ Recommended outfit:"""
                     "humidity": data["main"]["humidity"],
                     "description": data["weather"][0]["description"],
                     "wind_speed": data["wind"]["speed"],
-                    "precipitation_chance": 0,  # Not directly available in this API
+                    # "precipitation_chance": 0,  # Not directly available in this API
                     "weather_condition": data["weather"][0]["main"].lower(),
                 }
 
@@ -315,11 +320,11 @@ Recommended outfit:"""
             "humidity": 65 + (15 if condition in ["rainy", "snowy"] else 0),
             "description": condition,
             "wind_speed": 5 + (10 if condition in ["rainy", "thunderstorm"] else 0),
-            "precipitation_chance": (
-                80
-                if condition in ["rainy", "snowy", "thunderstorm"]
-                else 20 if condition == "partly cloudy" else 0
-            ),
+            # "precipitation_chance": (
+            #     80
+            #     if condition in ["rainy", "snowy", "thunderstorm"]
+            #     else 20 if condition == "partly cloudy" else 0
+            # ),
             "weather_condition": condition,
         }
 
