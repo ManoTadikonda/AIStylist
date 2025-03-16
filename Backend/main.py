@@ -60,7 +60,6 @@ async def root():
     }
 
 
-@app.get("/status", response_model=StatusResponse, tags=["status"])
 async def status():
     """Check API status and environment information."""
     try:

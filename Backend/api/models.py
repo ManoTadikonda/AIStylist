@@ -105,6 +105,7 @@ class OutfitRecommendation(BaseModel):
     recommendation: str
     weather_data: WeatherData
     wardrobe_summary: Optional[Dict[str, int]] = None
+    recommended_images: Optional[List[str]] = None
     success: bool = True
     error: Optional[str] = None
 

@@ -52,7 +52,7 @@ class OutfitRecommender:
         else:
             raise ValueError(f"Unsupported API type: {api_type}")
 
-    def _build_prompt(self, wardrobe_items: List[Dict], weather_data: Dict) -> str:
+    def _build_prompt(self, wardrobe_items: List[Dict], weather_data: Dict, ) -> str:
         """
         Build a prompt for the LLM with clear instructions for logical outfit recommendations.
 
@@ -74,7 +74,7 @@ class OutfitRecommender:
 
         for i, item in enumerate(wardrobe_items, 1):
             category = item["clothing_type"]
-            desc = f"{i}. {category}: {item['top_attributes']['color']} {item['top_attributes']['pattern']}, style: {item['top_attributes']['style']}, material: {item['top_attributes']['material']}"
+            desc = f"{i}. {category}: {item['top_attributes']['color']} {item['top_attributes']['pattern']}, style: {item['top_attributes']['style']}, material: {item['top_attributes']['material']}, image_path:{item['image_path']}"
 
             if category in [
                 "t-shirt",
@@ -127,7 +127,7 @@ Please consider:
 3. Appropriate layering if needed
 
 Your recommendation should follow the format:
-1. List each recommended item by its number and description
+1. List each recommended item by its number and description and do not miss image_path
 2. Explain why this outfit is suitable for today's weather
 3. Explain how the pieces work together (color coordination, style)
 
@@ -153,6 +153,7 @@ Recommended outfit:"""
             )
             if response.status_code == 200:
                 response_json = response.json()
+                print(response_json)
                 generated_text = response_json[0]["generated_text"]
                 final_response = generated_text.replace(prompt, "").strip()
                 return final_response
@@ -333,6 +334,7 @@ Recommended outfit:"""
         wardrobe_items: List[Dict],
         location: str = None,
         weather_data: Optional[Dict] = None,
+        
     ) -> Dict:
         """
         Generate an outfit recommendation based on wardrobe items and weather.
@@ -351,20 +353,21 @@ Recommended outfit:"""
 
 
         # If no weather data provided, fetch it
-        '''
+        
         if weather_data is None:
             if location:
                 weather_data = self.fetch_weather_data(location)
             else:
                 # Use a default location or mock data
                 weather_data = self._get_mock_weather_data("Default Location")
-        '''
+        
         # Build prompt
         prompt = self._build_prompt(wardrobe_items, weather_data)
-
+        print("🖼️ Prompt is:", prompt)
         # Call the appropriate API based on type
         if self.api_type == "huggingface":
             response_text = self._call_huggingface_api(prompt)
+            print("Response Text:", response_text)
         elif self.api_type == "ollama":
             response_text = self._call_ollama_api(prompt)
         elif self.api_type == "openai-compatible":
@@ -374,12 +377,23 @@ Recommended outfit:"""
 
         if "Error generating recommendation" in response_text:
             return {"error": response_text, "success": False}
+        
+        
+        recommended_images = [
+        item["image_path"]
+        for item in wardrobe_items
+        if item["image_path"] in response_text
+        ]
+
+        print("Image Path:",recommended_images)
+
 
         # Format the response
         return {
             "success": True,
             "recommendation": response_text,
             "weather_data": weather_data,
+            "recommended_images": recommended_images, 
             "wardrobe_summary": {
                 "total_items": len(wardrobe_items),
                 "tops": sum(
@@ -410,3 +424,5 @@ Recommended outfit:"""
                 ),
             },
         }
+        
+ 

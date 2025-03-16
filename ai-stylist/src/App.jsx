@@ -77,7 +77,7 @@ const App = () => {
             style_preference: style,
         };
 
-        console.log("📡 [DEBUG] Sending request to /outfit/recommend:", requestData);
+        console.log("[DEBUG] Sending request to /outfit/recommend:", requestData);
 
         try {
             const response = await axios.post("http://127.0.0.1:8000/outfit/recommend", requestData, {
@@ -131,8 +131,6 @@ const App = () => {
 
                     {/* Step 5: Outfit Recommendation */}
                     <OutfitRecommendation
-                        weatherData={weatherData}
-                        stylePreference={style}
                         wardrobeItems={images}
                         recommendation={recommendation}
                         getOutfitRecommendation={getOutfitRecommendation}
