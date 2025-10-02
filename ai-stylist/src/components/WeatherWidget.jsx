@@ -21,7 +21,10 @@ const WeatherWidget = ({ onWeatherChange }) => {
 
         try {
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
-            const response = await axios.get(url);
+            const response = await axios.get(url,{
+                maxContentLength: 5 * 1024 * 1024,  
+                maxBodyLength: 5 * 1024 * 1024      
+              });
 
             if (response.data.cod !== 200) {
                 throw new Error("Invalid city name or other issue");
@@ -32,7 +35,9 @@ const WeatherWidget = ({ onWeatherChange }) => {
             setLoading(false);
         } catch (error) {
             setError("Failed to fetch weather data. Please check the city name.");
-            setLoading(false);
+        }
+        finally {
+                setLoading(false);
         }
     };
 
